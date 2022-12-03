@@ -17,9 +17,9 @@ Antes de começar, vou precisar que me informe o nome do seu usuário\n"
   printf "Beleza %s, vamos começar :)\n" "$name" && sleep 1
 }
 
-system_update() {
-  xbps-install -Su --yes xbps && xbps-install -Su --yes
-}
+# system_update() {
+#   xbps-install -Su --yes xbps && xbps-install -Su --yes
+# }
 
 xbps_config() {
   # Adding multilib repo
@@ -30,7 +30,7 @@ xbps_config() {
   cp -v /usr/share/xbps.d/*-repository-*.conf /etc/xbps.d/
   sed -i 's|https://repo-default.voidlinux.org|https://voidlinux.com.br/repo|g' /etc/xbps.d/*-repository-*.conf
 
-  xbps-install -S
+  xbps-install -Su --yes
 }
 
 services_config() {
@@ -136,7 +136,7 @@ EOF
 }
 
 hello || error "Você digitou alguma coisa errada"
-system_update || error "Erro ao atualizar o sistema"
+# system_update || error "Erro ao atualizar o sistema"
 xbps_config || error "Erro ao configurar o xbps"
 service_config || error "Erro ao configurar o dbus e network"
 file_struct || error "Erro ao criar sistema de arquivos"
