@@ -85,11 +85,11 @@ install_pkgs() {
     -o /tmp/pkglist
   [ ! -f "/tmp/pkglist" ] && error "O arquivo pkglist não existe"
 
-  while read -r pkg; do
-    pkg_list="$pkg "
-  done < "/tmp/pkglist"
+  # while read -r pkg; do
+  #   pkg_list="$pkg "
+  # done < /tmp/pkglist
 
-  xbps-install -S --yes "$pkg_list"
+  xbps-install -S --yes $(cat /tmp/pkglist)
 }
 
 final_setup() {
