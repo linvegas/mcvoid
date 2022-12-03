@@ -6,18 +6,19 @@ error() {
 }
 
 hello() {
+  clear
   printf \
     "Bem vindo ao script de instalação do Void Linux
-    Antes de começar, vou precisar que me informe o nome do seu usuário\n"
+Antes de começar, vou precisar que me informe o nome do seu usuário\n"
 
   printf "Usuário: " && read -r name
   [ ! "$(id -u "$name")" ] && error "O usuário ${name} não existe"
 
-  printf "Beleza %s, vamos começar :)" "$name" && sleep 1
+  printf "Beleza %s, vamos começar :)\n" "$name" && sleep 1
 }
 
 system_update() {
-  xbps-install -Su --yes xbps && xbps-install -Su --yes
+  xbps-install -u --yes xbps && xbps-install -Su --yes
 }
 
 xbps_config() {
@@ -29,7 +30,7 @@ xbps_config() {
   cp -v /usr/share/xbps.d/*-repository-*.conf /etc/xbps.d/
   sed -i 's|https://repo-default.voidlinux.org|https://voidlinux.com.br/repo|g' /etc/xbps.d/*-repository-*.conf
 
-  xbsp-install -S
+  xbps-install -S
 }
 
 services_config() {
