@@ -50,7 +50,7 @@ services_config() {
 }
 
 file_struct() {
-  mkdir -pv \
+  sudo -u "$name" mkdir -pv \
     /home/"$name"/.config/mpd \
     /home/"$name"/.cache/zsh \
     /home/"$name"/.local/src \
@@ -134,10 +134,6 @@ EOF
 
   mv -v /home/"$name"/.gnupg /home/"$name"/.local/share/gnupg
 }
-
-# Temporary sudo config
-echo "%wheel ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/99_sudotemp
-trap 'rm -f /etc/sudoers.d/99_sudotemp' QUIT EXIT
 
 hello || error "Você digitou alguma coisa errada"
 # system_update || error "Erro ao atualizar o sistema"
