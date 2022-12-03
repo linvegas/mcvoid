@@ -77,7 +77,7 @@ set_dotfiles() {
   sudo -u "$name" git clone "$dotfiles_repo" "$dotdir"
 
   cd "$dotdir" || error "'cd ${dotdir}' falhou"
-  sudo -u "$name" stow -v ./*/
+  sudo -u "$name" stow -v */
 }
 
 install_pkgs() {
