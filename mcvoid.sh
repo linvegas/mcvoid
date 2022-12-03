@@ -138,7 +138,7 @@ EOF
 hello || error "Você digitou alguma coisa errada"
 # system_update || error "Erro ao atualizar o sistema"
 xbps_config || error "Erro ao configurar o xbps"
-service_config || error "Erro ao configurar o dbus e network"
+services_config || error "Erro ao configurar o dbus e network"
 file_struct || error "Erro ao criar sistema de arquivos"
 set_dotfiles || error "Erro ao configurar os dotfiles"
 install_pkgs || error "Erro ao instalar os programas"
