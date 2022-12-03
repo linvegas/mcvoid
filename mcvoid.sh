@@ -18,7 +18,7 @@ Antes de começar, vou precisar que me informe o nome do seu usuário\n"
 }
 
 system_update() {
-  xbps-install -u --yes xbps && xbps-install -Su --yes
+  xbps-install -Su --yes xbps && xbps-install -Su --yes
 }
 
 xbps_config() {
