@@ -135,6 +135,10 @@ EOF
   mv -v /home/"$name"/.gnupg /home/"$name"/.local/share/gnupg
 }
 
+# Temporary sudo config
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/99_sudotemp
+trap 'rm -f /etc/sudoers.d/99_sudotemp' QUIT EXIT
+
 hello || error "Você digitou alguma coisa errada"
 # system_update || error "Erro ao atualizar o sistema"
 xbps_config || error "Erro ao configurar o xbps"
