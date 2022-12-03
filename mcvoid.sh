@@ -26,9 +26,9 @@ xbps_config() {
   xbps-install -S --yes void-repo-multilib
 
   # Changing deafault mirror
-  mkdir -pv /etc/xbps.d
-  cp -v /usr/share/xbps.d/*-repository-*.conf /etc/xbps.d/
-  sed -i 's|https://repo-default.voidlinux.org|https://voidlinux.com.br/repo|g' /etc/xbps.d/*-repository-*.conf
+  # mkdir -pv /etc/xbps.d
+  # cp -v /usr/share/xbps.d/*-repository-*.conf /etc/xbps.d/
+  # sed -i 's|https://repo-default.voidlinux.org|https://voidlinux.com.br/repo|g' /etc/xbps.d/*-repository-*.conf
 
   xbps-install -Su --yes
 }
