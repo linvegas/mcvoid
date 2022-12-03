@@ -14,21 +14,19 @@ Antes de começar, vou precisar que me informe o nome do seu usuário\n"
   printf "Usuário: " && read -r name
   [ ! "$(id -u "$name")" ] && error "O usuário ${name} não existe"
 
+  printf "Placa de vídeo [intel/nvidia/amd]: " && read -r video_card
+
   printf "Beleza %s, vamos começar :)\n" "$name" && sleep 1
 }
-
-# system_update() {
-#   xbps-install -Su --yes xbps && xbps-install -Su --yes
-# }
 
 xbps_config() {
   # Adding multilib repo
   xbps-install -S --yes void-repo-multilib
 
   # Changing deafault mirror
-  # mkdir -pv /etc/xbps.d
-  # cp -v /usr/share/xbps.d/*-repository-*.conf /etc/xbps.d/
-  # sed -i 's|https://repo-default.voidlinux.org|https://voidlinux.com.br/repo|g' /etc/xbps.d/*-repository-*.conf
+  mkdir -pv /etc/xbps.d
+  cp -v /usr/share/xbps.d/*-repository-*.conf /etc/xbps.d/
+  sed -i 's|https://repo-default.voidlinux.org|https://voidlinux.com.br/repo|g' /etc/xbps.d/*-repository-*.conf
 
   xbps-install -Su --yes
 }
@@ -85,11 +83,21 @@ install_pkgs() {
     -o /tmp/pkglist
   [ ! -f "/tmp/pkglist" ] && error "O arquivo pkglist não existe"
 
-  # while read -r pkg; do
-  #   pkg_list="$pkg "
-  # done < /tmp/pkglist
-
   xbps-install -S --yes $(cat /tmp/pkglist)
+
+  # Graphics card drivers
+  case "$video_card" in
+    intel)
+      xbps-install -S --yes \
+        xf86-video-intel mesa-vulkan-intel intel-video-accel mesa-dri;;
+    nvidia)
+      xbps-install -S --yes void-repo-nonfree void-repo-multilib-nonfree && xbps-install -S
+      xbps-install -S --yes nvidia;;
+    amd)
+      xbps-install -S --yes \
+        vulkan-loader mesa-vulkan-radeon xf86-video-amdgpu mesa-vaapi mesa-vdpau;;
+    *) echo "Nenhum driver de vídeo especificado";;
+  esac
 }
 
 final_setup() {
@@ -128,15 +136,11 @@ Section "InputClass"
 EndSection
 EOF
 
-  rm -rv \
-    /home/"$name"/.bash* \
-    /home/"$name"/.inputrc
+  rm -rv /home/"$name"/.bash* /home/"$name"/.inputrc
 
-  mv -v /home/"$name"/.gnupg /home/"$name"/.local/share/gnupg
 }
 
 hello || error "Você digitou alguma coisa errada"
-# system_update || error "Erro ao atualizar o sistema"
 xbps_config || error "Erro ao configurar o xbps"
 services_config || error "Erro ao configurar o dbus e network"
 file_struct || error "Erro ao criar sistema de arquivos"
