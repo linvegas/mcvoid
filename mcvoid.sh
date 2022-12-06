@@ -50,6 +50,7 @@ services_config() {
 file_struct() {
   sudo -u "$name" mkdir -pv \
     /home/"$name"/.config/mpd \
+    /home/"$name"/.config/zsh \
     /home/"$name"/.cache/zsh \
     /home/"$name"/.local/src \
     /home/"$name"/.local/state \
@@ -108,7 +109,7 @@ final_setup() {
 
   # configuração do sudoers
   echo "%wheel ALL=(ALL:ALL) ALL" > /etc/sudoers.d/00-sudo-wheel
-  printf "Defaults timestamp_timeout=30\nDefaults timestamp_type=global" > /etc/sudoers.d/01-sudo-time
+  printf "Defaults timestamp_timeout=30\nDefaults timestamp_type=global\n" > /etc/sudoers.d/01-sudo-time
   echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/poweroff,/usr/bin/halt,/usr/bin/reboot,/usr/bin/loginctl suspend,/usr/bin/mount,/usr/bin/umount" > /etc/sudoers.d/02-cmd-nopasswd
   echo "Defaults editor=/usr/bin/nvim" > /etc/sudoers.d/03-visudo-editor
 
