@@ -1,15 +1,23 @@
 #!/usr/bin/env sh
 
+BOLD="\e[1m"
+GREEN="\e[32m"
+RED="\e[31m"
+ALL_OFF="\e[0m"
+
 error() {
-  printf "%s\n" "$1" >&2
+  printf "${BOLD}${RED}ERROR:${ALL_OFF}${BOLD} %s${ALL_OFF}\n" "$1" >&2
   exit 1
+}
+
+info() {
+  printf "${BOLD}${GREEN}==>${ALL_OFF}${BOLD} %s${ALL_OFF}\n" "$1"
 }
 
 hello() {
   clear
-  printf \
-    "Bem vindo ao script de instalação do Void Linux
-Antes de começar, vou precisar que me informe o nome do seu usuário\n"
+  printf "Bem vindo ao script de instalação do Void Linux\n"
+  printf "Antes de começar, vou precisar que me informe o nome do seu usuário\n"
 
   printf "Usuário: " && read -r name
   [ ! "$(id -u "$name")" ] && error "O usuário ${name} não existe"
@@ -20,6 +28,8 @@ Antes de começar, vou precisar que me informe o nome do seu usuário\n"
 }
 
 xbps_config() {
+
+  info "Configurando o xbps"
   # Adding multilib repo
   xbps-install -S --yes void-repo-multilib
 
@@ -32,11 +42,14 @@ xbps_config() {
 }
 
 services_config() {
-  xbps-install -S --yes dbus elogind ntp NetworkManager
+
+  info "Instalando e iniciando serviços"
+  xbps-install -S --yes dbus elogind ntp NetworkManager cronie
 
   [ ! -h "/var/service/dbus" ] && ln -vs /etc/sv/dbus /var/service
   [ ! -h "/var/service/elogind" ] && ln -vs /etc/sv/elogind /var/service
   [ ! -h "/var/service/ntpd" ] && ln -vs /etc/sv/ntpd /var/service
+  [ ! -h "/var/service/cronie" ] && ln -vs /etc/sv/cronie /var/service
 
   # Using NetworkManager as it says
   if [ -h "/var/service/dhcpcd" ] || [ -h "/var/service/wpa_supplicant" ]; then
@@ -48,6 +61,8 @@ services_config() {
 }
 
 file_struct() {
+
+  info "Montando estrutura de arquivos"
   sudo -u "$name" mkdir -pv \
     /home/"$name"/.config/mpd \
     /home/"$name"/.config/zsh \
@@ -65,10 +80,13 @@ file_struct() {
     /home/"$name"/docx/downloads
 
   mkdir -pv /mnt/usb1 /mnt/usb2 /mnt/usb3
-  cd /mnt && chown -v -R "$name":"$name" ./*/
+  # cd /mnt &&
+  chown -v -R "$name":"$name" /mnt/*/
 }
 
 set_dotfiles() {
+
+  info "Clonando e configurando os dotfiles"
   dotfiles_repo="https://github.com/MisterConscio/dotfiles.git"
   dotdir="/home/$name/dotfiles"
 
@@ -80,9 +98,13 @@ set_dotfiles() {
 }
 
 install_pkgs() {
-  curl -L "https://raw.githubusercontent.com/MisterConscio/MCVOID/main/pkglist" \
-    -o /tmp/pkglist
-  [ ! -f "/tmp/pkglist" ] && error "O arquivo pkglist não existe"
+
+  info "Instalando pacotes do sistema"
+  pkg_list="/tmp/pkglist"
+  curl -L "https://raw.githubusercontent.com/MisterConscio/mcvoid/main/pkglist" \
+    -o "$pkg_list"
+
+  [ ! -f "$pkg_list" ] && error "O arquivo ${pkglist} não existe"
 
   xbps-install -S --yes $(cat /tmp/pkglist)
 
@@ -102,6 +124,9 @@ install_pkgs() {
 }
 
 final_setup() {
+
+  info "Etapas finais da instalação"
+
   usermod -aG lp,kvm,storage,i2c "$name"
 
   chsh -s /usr/bin/zsh "$name"
@@ -149,4 +174,4 @@ set_dotfiles || error "Erro ao configurar os dotfiles"
 install_pkgs || error "Erro ao instalar os programas"
 final_setup || error "Erro ao finalizar o setup"
 
-printf "\nParece que tudo ocorreu bem %s, pode fazer o reboot do sistema\n" "$name"
+printf "\nParece que ${GREEN}tudo ocorreu bem %s${ALL_OFF}, pode fazer o reboot do sistema\n" "$name"
