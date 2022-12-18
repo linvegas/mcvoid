@@ -10,9 +10,9 @@ error() {
   exit 1
 }
 
-info() {
-  printf "${BOLD}${GREEN}==>${ALL_OFF}${BOLD} %s${ALL_OFF}\n" "$1"
-}
+info() { printf "${BOLD}${GREEN}==>${ALL_OFF}${BOLD} %s${ALL_OFF}\n" "$1" ;}
+
+xbps() { xbps-install -S --yes "$@" ;}
 
 hello() {
   clear
@@ -30,8 +30,9 @@ hello() {
 xbps_config() {
 
   info "Configurando o xbps"
+
   # Adding multilib repo
-  xbps-install -S --yes void-repo-multilib
+  xbps void-repo-multilib
 
   # Changing deafault mirror
   mkdir -pv /etc/xbps.d
@@ -44,7 +45,7 @@ xbps_config() {
 services_config() {
 
   info "Instalando e iniciando serviços"
-  xbps-install -S --yes dbus elogind ntp NetworkManager cronie
+  xbps dbus elogind ntp NetworkManager cronie
 
   [ ! -h "/var/service/dbus" ] && ln -vs /etc/sv/dbus /var/service
   [ ! -h "/var/service/elogind" ] && ln -vs /etc/sv/elogind /var/service
@@ -54,10 +55,10 @@ services_config() {
   # Using NetworkManager as it says
   if [ -h "/var/service/dhcpcd" ] || [ -h "/var/service/wpa_supplicant" ]; then
     rm -v /var/service/dhcpcd /var/service/wpa_supplicant
-    ln -vs /etc/sv/NetworkManager /var/service
-  else
-    ln -vs /etc/sv/NetworkManager /var/service
   fi
+
+  ln -vs /etc/sv/NetworkManager /var/service
+
 }
 
 file_struct() {
@@ -90,7 +91,7 @@ set_dotfiles() {
   dotfiles_repo="https://github.com/MisterConscio/dotfiles.git"
   dotdir="/home/$name/dotfiles"
 
-  xbps-install -S --yes stow git
+  xbps stow git
   sudo -u "$name" git clone "$dotfiles_repo" "$dotdir"
 
   cd "$dotdir" || error "'cd ${dotdir}' falhou"
@@ -101,26 +102,37 @@ install_pkgs() {
 
   info "Instalando pacotes do sistema"
   pkg_list="/tmp/pkglist"
-  curl -L "https://raw.githubusercontent.com/MisterConscio/mcvoid/main/pkglist" \
-    -o "$pkg_list"
 
-  [ ! -f "$pkg_list" ] && error "O arquivo ${pkglist} não existe"
+  curl -L "https://raw.githubusercontent.com/MisterConscio/mcvoid/main/pkglist" -o "$pkg_list"
 
-  xbps-install -S --yes $(cat /tmp/pkglist)
+  [ ! -f "$pkg_list" ] && error "O arquivo ${pkg_list} não existe"
+
+  xbps $(cat /tmp/pkglist)
 
   # Graphics card drivers
   case "$video_card" in
     intel)
-      xbps-install -S --yes \
-        xf86-video-intel mesa-vulkan-intel intel-video-accel mesa-dri;;
+      xbps xf86-video-intel mesa-vulkan-intel intel-video-accel mesa-dri;;
     nvidia)
-      xbps-install -S --yes void-repo-nonfree void-repo-multilib-nonfree && xbps-install -S
-      xbps-install -S --yes nvidia;;
+      xbps void-repo-nonfree void-repo-multilib-nonfree &&
+        xbps nvidia nvidia-libs-32bit;;
     amd)
-      xbps-install -S --yes \
-        vulkan-loader mesa-vulkan-radeon xf86-video-amdgpu mesa-vaapi mesa-vdpau;;
+      xbps vulkan-loader mesa-vulkan-radeon xf86-video-amdgpu mesa-vaapi mesa-vdpau;;
     *) echo "Nenhum driver de vídeo especificado";;
   esac
+}
+
+font_config() {
+
+  nerd_font_dir="/home/${name}/.local/share/fonts/otf"
+  nerd_font="DroidSansMono"
+
+  mkdir -pv "$nerd_font_dir"
+  curl -s "https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.0-RC/${nerd_font}.zip" > "$nerd_font_dir"
+
+  unzip "${nerd_font_dir}/${nerd_font}.zip" -d "${nerd_font_dir}/${nerd_font}" &&
+    rm -r "$nerd_font_dir"/*.zip
+
 }
 
 final_setup() {
@@ -136,7 +148,7 @@ final_setup() {
   echo "%wheel ALL=(ALL:ALL) ALL" > /etc/sudoers.d/00-sudo-wheel
   printf "Defaults timestamp_timeout=30\nDefaults timestamp_type=global\n" > /etc/sudoers.d/01-sudo-time
   echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/poweroff,/usr/bin/halt,/usr/bin/reboot,/usr/bin/loginctl suspend,/usr/bin/mount,/usr/bin/umount" > /etc/sudoers.d/02-cmd-nopasswd
-  echo "Defaults editor=/usr/bin/nvim" > /etc/sudoers.d/03-visudo-editor
+  printf "Defaults editor=/usr/bin/nvim" > /etc/sudoers.d/03-visudo-editor
 
   echo "PROMPT='%F{red}%B%1~%b%f %(!.#.>>) '" > /root/.zshrc
 
@@ -172,6 +184,7 @@ services_config || error "Erro ao configurar o dbus e network"
 file_struct || error "Erro ao criar sistema de arquivos"
 set_dotfiles || error "Erro ao configurar os dotfiles"
 install_pkgs || error "Erro ao instalar os programas"
+font_config || error "Erro ao configurar as fontes"
 final_setup || error "Erro ao finalizar o setup"
 
 printf "\nParece que ${GREEN}tudo ocorreu bem %s${ALL_OFF}, pode fazer o reboot do sistema\n" "$name"
