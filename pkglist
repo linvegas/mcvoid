@@ -25,6 +25,7 @@ alsa-utils
 arc-theme
 base-devel
 bat
+bc
 beets
 btop
 cryptsetup
@@ -39,7 +40,7 @@ fzf
 gdu
 git
 htop
-i3-gaps
+i3-wm
 i3lock
 jq
 libnotify

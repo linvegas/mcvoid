@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
-BOLD="\e[1m"
-GREEN="\e[32m"
-RED="\e[31m"
-ALL_OFF="\e[0m"
+BOLD="\033[1m"
+GREEN="\033[32m"
+RED="\033[31m"
+ALL_OFF="\033[0m"
 
 error() {
   printf "${BOLD}${RED}ERROR:${ALL_OFF}${BOLD} %s${ALL_OFF}\n" "$1" >&2
