@@ -63,6 +63,7 @@ picom
 polybar
 pulseaudio
 pulsemixer
+playerctl
 redshift
 rofi
 rsync
