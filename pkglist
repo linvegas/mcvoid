@@ -40,7 +40,7 @@ fzf
 gdu
 git
 htop
-i3-wm
+i3
 i3lock
 jq
 libnotify
@@ -77,6 +77,7 @@ tldr
 tmux
 ueberzug
 unzip
+zip
 wget
 yt-dlp
 zathura

@@ -3,7 +3,7 @@
 ## Usage
 
 ```sh
-curl -O "https://raw.githubusercontent.com/MisterConscio/MCVOID/main/mcarch.sh" && sh mcarch.sh
+curl "https://raw.githubusercontent.com/MisterConscio/mcvoid/main/mcvoid.sh" > /tmp && sh /tmp/mcvoid.sh
 ```
 
 ## Porpuse

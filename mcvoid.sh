@@ -71,6 +71,7 @@ file_struct() {
     /home/"$name"/.local/src \
     /home/"$name"/.local/state \
     /home/"$name"/.local/share/gnupg \
+    /home/"$name"/.local/share/npm/lib \
     /home/"$name"/media/pic \
     /home/"$name"/media/mus \
     /home/"$name"/media/vid \
@@ -128,7 +129,7 @@ font_config() {
   nerd_font="DroidSansMono"
 
   mkdir -pv "$nerd_font_dir"
-  curl -s "https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.0-RC/${nerd_font}.zip" > "$nerd_font_dir"
+  wget -q -P "$nerd_font_dir" "https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/${nerd_font}.zip"
 
   unzip "${nerd_font_dir}/${nerd_font}.zip" -d "${nerd_font_dir}/${nerd_font}" &&
     rm -r "$nerd_font_dir"/*.zip
@@ -174,7 +175,7 @@ Section "InputClass"
 EndSection
 EOF
 
-  rm -rv /home/"$name"/.bash* /home/"$name"/.inputrc
+  rm -rv /home/"$name"/.bash* /home/"$name"/.*rc
 
 }
 
