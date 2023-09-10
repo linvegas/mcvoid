@@ -89,7 +89,7 @@ file_struct() {
 set_dotfiles() {
 
   info "Clonando e configurando os dotfiles"
-  dotfiles_repo="https://github.com/MisterConscio/dotfiles.git"
+  dotfiles_repo="https://github.com/linvegas/dotfiles.git"
   dotdir="/home/$name/dotfiles"
 
   xbps stow git
@@ -104,7 +104,7 @@ install_pkgs() {
   info "Instalando pacotes do sistema"
   pkg_list="/tmp/pkglist"
 
-  curl -L "https://raw.githubusercontent.com/MisterConscio/mcvoid/main/pkglist" -o "$pkg_list"
+  curl -L "https://raw.githubusercontent.com/linvegas/mcvoid/main/pkglist" -o "$pkg_list"
 
   [ ! -f "$pkg_list" ] && error "O arquivo ${pkg_list} não existe"
 
