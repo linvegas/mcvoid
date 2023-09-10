@@ -3,7 +3,7 @@
 ## Usage
 
 ```sh
-curl "https://raw.githubusercontent.com/MisterConscio/mcvoid/main/mcvoid.sh" > /tmp && sh /tmp/mcvoid.sh
+curl -s "https://raw.githubusercontent.com/linvegas/mcvoid/main/mcvoid.sh" > /tmp && sh /tmp/mcvoid.sh
 ```
 
 ## Porpuse
